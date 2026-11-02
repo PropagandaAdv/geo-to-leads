@@ -1,0 +1,16 @@
+# Edge function (specifiche)
+Implementate in Lovable Cloud (Deno/TypeScript). Regole comuni: verificare il JWT e l'appartenenza al cliente prima di ogni azione per conto dell'utente; usare `service_role` solo lato funzione; i token OAuth si leggono/scrivono solo qui (`integration_secrets`, cifrati); registrare in `audit_log`; nessun segreto nel frontend. Segreti da impostare nei *Secrets* di Lovable Cloud: `GOOGLE_CLIENT_ID/SECRET`, `MS_CLIENT_ID/SECRET/TENANT`, `TOKEN_ENC_KEY`, `INBOUND_DOMAIN`.
+
+| Funzione | Trigger | Scopo |
+|---|---|---|
+| `oauth-start` | utente (client_owner) | Genera URL di consenso (state firmato con client_id+user_id+provider, PKCE). Scope Fase 1: Gmail `gmail.send`; Calendar sola lettura; Microsoft `Mail.Send`, `Calendars.Read`, `offline_access`. |
+| `oauth-callback` | redirect provider | Verifica `state`, scambia il codice, cifra e salva il refresh token, crea/aggiorna `integrations`, mostra esito. |
+| `oauth-revoke` | utente | Revoca presso il provider, cancella il segreto, `integrations.stato='revocata'`. |
+| `send-approved-email` | DB webhook su `email_messages.stato→'approvata'` + retry schedulato | Invia dalla casella del cliente; imposta `Reply-To`/`Bcc` `in+<message_id>@INBOUND_DOMAIN`; aggiorna `inviata`/`errore`, `provider_message_id`, `thread_id`. Se manca l'integrazione: lascia `approvata` e segnala in UI. **Nessun invio per stati diversi da `approvata`.** |
+| `ingest-reply` | webhook posta in ingresso | Associa la risposta al messaggio via indirizzo `in+<id>@`, salva `email_events`, chiama `classify-reply`. Rileva bounce. |
+| `classify-reply` | chiamata interna | Classifica (`interessato`, `non_interessato`, `da_ricontattare`, `fuori_ufficio`, `bounce`, `altro`) con un LLM; salva solo un estratto breve; la classificazione è un suggerimento, mostrata come tale in UI. |
+| `sync-calendar` | cron (es. ogni 15 min) | Legge eventi dei calendari collegati; associa un evento a un'azienda se il dominio di un partecipante coincide con `contacts.email`/`companies.dominio`; upsert su `meetings(client_id, external_id)`. |
+| `ingest-visits` | webhook (solo se il fornitore LeadRadar conferma un'API) | Stesso schema di `scripts/sync_dashboard.py visits`. Finché non esiste, le visite arrivano dal plugin. |
+| `retention-cleanup` | cron giornaliero | Cancella dati oltre `clients.retention_giorni`. |
+
+Aperture email: nessun pixel (disattivato di default).

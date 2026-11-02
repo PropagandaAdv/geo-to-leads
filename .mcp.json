@@ -7,7 +7,13 @@
     "arvow": {
       "type": "http",
       "url": "https://api.arvow.com/mcp",
-      "headers": { "Authorization": "Bearer ${ARVOW_API_KEY}" }
+      "headers": {
+        "Authorization": "Bearer ${ARVOW_API_KEY}"
+      }
+    },
+    "lovable": {
+      "type": "http",
+      "url": "https://mcp.lovable.dev"
     }
   }
 }

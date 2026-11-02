@@ -1,6 +1,11 @@
 # Changelog
 Versioning semantico.
 
+## 0.3.0 — 2026-11-02
+- Dashboard cliente (Lovable, multi-tenant): SPEC, `schema.sql` con RLS (testato: 23 controlli su PostgreSQL 16), prompt Lovable, specifiche edge function, comandi `/dashboard-setup` e `/dashboard-cliente`, `scripts/sync_dashboard.py`.
+- `/leadradar-outreach` scrive bozze nel database (mai invio dal plugin); `/leadradar-report` legge/pubblica via dashboard.
+- MCP Lovable aggiunto a `.mcp.json`.
+
 ## 0.2.0 — 2026-11-02
 - Solo cloud: rimosso il server MCP locale LeadRadar; dati cliente in repo GitHub privato con commit/push per fase.
 - Personalizzazione: skill `client-profile` (profilo-cliente.md), colonne `evidenza`/`angolo_cliente` nel piano, sezioni evidenza/angolo nel brief, test di personalizzazione nel QA.

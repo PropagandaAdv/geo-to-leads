@@ -1,0 +1,2 @@
+Applica al database esattamente lo schema SQL contenuto nel file `dashboard/schema.sql` del repository (incollato di seguito), senza modificarlo: tabelle, funzioni di accesso, policy RLS, privilegi di colonna, trigger di audit, vista `v_client_kpis`, Realtime. Crea il bucket privato di Storage `reports` con policy: lettura solo se il primo segmento del percorso è un `client_id` a cui l'utente ha accesso (`has_client_access`). Poi esegui i controlli di sicurezza e correggi qualsiasi avviso senza allentare le policy.
+[incollare qui il contenuto di schema.sql]

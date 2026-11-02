@@ -1,0 +1,2 @@
+Implementa le Edge Function descritte in `dashboard/functions/README.md` (incollato di seguito): oauth-start, oauth-callback, oauth-revoke, send-approved-email, ingest-reply, classify-reply, sync-calendar, retention-cleanup. Imposta i segreti come Lovable Secrets (chiedimi i valori da inserire nell'editor: non chiedermi mai di scriverli in chat). Verifica JWT e appartenenza al cliente in ogni funzione. send-approved-email deve inviare SOLO messaggi in stato `approvata`.
+[incollare qui il contenuto di functions/README.md]

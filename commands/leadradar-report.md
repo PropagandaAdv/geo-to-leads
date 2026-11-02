@@ -10,6 +10,7 @@ Il filesystem della sessione è effimero. Prima di tutto verifica che `${GEO_CLI
 Argomenti: $ARGUMENTS. Se manca il cliente chiedilo; con `--tutti` esegui per ogni cliente con `stato: attivo` e `leadradar.abilitato: true` (utile per esecuzione settimanale programmata) e produci un digest per cliente. Periodo di default: ultimi 7 giorni.
 
 ## Sorgente dati (in quest'ordine)
+0. **Dashboard** (fonte unica di verità per le visite, se il cliente è attivato): `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/sync_dashboard.py export-visits <slug> --days <N>`.
 1. `<slug>/leadradar/visite.csv` (alimentato da `python3 ${CLAUDE_PLUGIN_ROOT}/connectors/leadradar/ingest/import_csv.py <slug> <export.csv>`; l'export CSV si scarica dal dashboard e si carica in sessione).
 2. Alert email: leggili con l'MCP Gmail (se collegato), salvali come `.txt` in `<slug>/leadradar/alert/` e importali con `ingest/parse_alert_emails.py <slug> --eml-dir ...`.
 3. Modalità A (API): solo se il fornitore la conferma.
@@ -21,5 +22,7 @@ Aziende ordinate per priorità: ICP score, numero visite, pagine ad alto intento
 
 ## Output
 `<slug>/leadradar/digest-AAAA-MM-GG.md` e `.docx` (`python3 ${CLAUDE_PLUGIN_ROOT}/scripts/export_docx.py ... --cliente "<nome>"`).
+
+Dopo il digest: carica `.docx` nella sezione Report con `sync_dashboard.py report <slug> --file ... --tipo digest --titolo "..." --periodo "..."` e, se nuove visite sono state importate da CSV/alert, `sync_dashboard.py visits <slug>`.
 
 Opzionale, **solo con conferma**: crea task di ricontatto nello strumento di task management dell'agenzia se c'è un MCP collegato (elenca prima i task che creeresti).
