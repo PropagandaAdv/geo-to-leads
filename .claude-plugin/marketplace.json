@@ -1,0 +1,12 @@
+{
+  "name": "propaganda-geo",
+  "description": "Plugin dell'agenzia per servizi GEO/SEO e lead intelligence",
+  "owner": { "name": "Propaganda Adv" },
+  "plugins": [
+    {
+      "name": "geo-growth-engine",
+      "source": "./",
+      "description": "Analisi GEO/SEO, articoli con Arvow, visitatori B2B con Lead Radar"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Scheda cliente — compilata da /geo-cliente-nuovo. Nessun dato cliente va nel repo del plugin.
+slug: ""                 # kebab-case, es. "acme-srl"
+nome: ""
+sito_url: ""             # https://...
+settore: ""
+prodotti_servizi: []     # lista di stringhe
+area_geografica: ""      # es. "Lombardia" / "Italia"
+lingua: it
+mercato: IT
+target: B2B              # B2B | B2C | MISTO
+buyer_persona: ""
+icp:
+  settori: []
+  dimensioni_azienda: ""   # es. "10-250 dipendenti"
+  paesi: [IT]
+competitor_noti: []        # domini, opzionale
+tono_di_voce: ""
+claim_vietati: []
+cms: ""                    # wordpress | webflow | altro
+arvow:
+  modalita_pubblicazione: bozza   # bozza | diretta (diretta richiede comunque conferma)
+ubersuggest:
+  progetto_esistente: false
+  project_id: ""
+leadradar:
+  alert_email: ""          # referente cliente
+  abilitato: false
+referente:
+  nome: ""
+  email: ""
+stato: attivo              # attivo | sospeso | chiuso
+creato_il: ""

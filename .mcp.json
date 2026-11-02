@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ubersuggest": {
+      "type": "http",
+      "url": "https://ubersuggest-mcp.neilpatelapi.com/mcp"
+    },
+    "arvow": {
+      "type": "http",
+      "url": "https://api.arvow.com/mcp",
+      "headers": { "Authorization": "Bearer ${ARVOW_API_KEY}" }
+    }
+  }
+}

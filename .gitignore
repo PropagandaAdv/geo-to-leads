@@ -1,0 +1,13 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+dist/
+.DS_Store
+# Dati cliente non vanno mai nel repo del plugin
+clients/
+agency-clients/
+.mcpb-cache/

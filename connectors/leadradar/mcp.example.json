@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "leadradar": {
+      "command": "python3",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/connectors/leadradar/server/server.py"],
+      "env": { "GEO_CLIENTS_DIR": "${GEO_CLIENTS_DIR}" }
+    }
+  }
+}

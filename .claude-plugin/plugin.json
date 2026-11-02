@@ -1,0 +1,10 @@
+{
+  "name": "geo-growth-engine",
+  "displayName": "GEO Growth Engine",
+  "version": "0.1.0",
+  "description": "Analisi GEO/SEO (Ubersuggest), produzione articoli (Arvow) e intelligence sui visitatori B2B (Lead Radar) per agenzie multi-cliente.",
+  "author": { "name": "Propaganda Adv" },
+  "repository": "https://github.com/propagandaadv/geo-to-leads",
+  "license": "UNLICENSED",
+  "keywords": ["seo", "geo", "ubersuggest", "arvow", "leadradar", "agenzia"]
+}
