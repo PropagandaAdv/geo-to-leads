@@ -4,10 +4,13 @@ argument-hint: "[slug-cliente opzionale]"
 ---
 # /geo-cliente-nuovo
 
+## Dati in cloud (obbligatorio)
+Il filesystem della sessione è effimero. Prima di tutto verifica che `${GEO_CLIENTS_DIR}` sia il checkout di un repo GitHub **privato** dei clienti (es. `propagandaadv/geo-clients`); se non è collegato, usa `add_repo` (accesso push) per collegarlo e clonalo lì. A fine di ogni fase: `git add`, commit e push su quel repo (mai nel repo del plugin). Non uscire dalla sessione con dati non pushati.
+
 **Prima cosa: chiedi all'utente per quale cliente stiamo lavorando** (nome o slug: $ARGUMENTS).
 
 ## Cartella dati
-`CLIENTS=${GEO_CLIENTS_DIR:-~/agency-clients}`. Se non esiste, chiedi conferma prima di crearla. I dati cliente non vanno mai nel repo del plugin.
+`CLIENTS=${GEO_CLIENTS_DIR:-/home/user/geo-clients}`. Se non esiste, chiedi conferma prima di crearla. I dati cliente non vanno mai nel repo del plugin.
 
 ## Cliente già esistente?
 Se `$CLIENTS/<slug>/client.yaml` esiste, caricalo, mostra un riepilogo e chiedi **solo cosa è cambiato**.

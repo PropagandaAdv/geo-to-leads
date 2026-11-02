@@ -6,6 +6,12 @@ Cliente: {{nome_cliente}} · Lingua: {{lingua}} · Stato: bozza
 - **Intento:** {{intento}} · **Funnel:** {{funnel}}
 - **Lunghezza:** {{parole}} parole · **Formato:** {{formato}}
 
+## Evidenza dall'analisi (obbligatoria)
+{{evidenza}} — cluster: {{cluster}}; gap: {{gap}}; competitor di riferimento: {{competitor}}
+
+## Angolo del cliente (cosa dice di diverso)
+{{angolo_cliente}} — materiale reale da usare: {{materiale_cliente}}
+
 ## Risposta diretta (prime 2–3 righe, stile GEO)
 {{risposta_diretta}}
 

@@ -4,6 +4,9 @@ argument-hint: "[slug-cliente]"
 ---
 # /leadradar-outreach
 
+## Dati in cloud (obbligatorio)
+Il filesystem della sessione è effimero. Prima di tutto verifica che `${GEO_CLIENTS_DIR}` sia il checkout di un repo GitHub **privato** dei clienti (es. `propagandaadv/geo-clients`); se non è collegato, usa `add_repo` (accesso push) per collegarlo e clonalo lì. A fine di ogni fase: `git add`, commit e push su quel repo (mai nel repo del plugin). Non uscire dalla sessione con dati non pushati.
+
 Chiedi il cliente (argomento: $ARGUMENTS), mostra l'ultimo digest e chiedi **quali aziende** contattare e a quale referente (solo contatti presenti nei dati o forniti dall'utente: non inventare indirizzi).
 
 ## Bozze

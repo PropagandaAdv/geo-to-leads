@@ -4,6 +4,9 @@ argument-hint: "[slug-cliente]"
 ---
 # /leadradar-setup
 
+## Dati in cloud (obbligatorio)
+Il filesystem della sessione è effimero. Prima di tutto verifica che `${GEO_CLIENTS_DIR}` sia il checkout di un repo GitHub **privato** dei clienti (es. `propagandaadv/geo-clients`); se non è collegato, usa `add_repo` (accesso push) per collegarlo e clonalo lì. A fine di ogni fase: `git add`, commit e push su quel repo (mai nel repo del plugin). Non uscire dalla sessione con dati non pushati.
+
 Chiedi il cliente (argomento: $ARGUMENTS) e carica `client.yaml`.
 
 ## 0. Conferma il prodotto (non dare nulla per scontato)

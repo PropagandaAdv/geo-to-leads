@@ -4,12 +4,16 @@ argument-hint: "[slug-cliente | --tutti] [giorni=7]"
 ---
 # /leadradar-report
 
+## Dati in cloud (obbligatorio)
+Il filesystem della sessione è effimero. Prima di tutto verifica che `${GEO_CLIENTS_DIR}` sia il checkout di un repo GitHub **privato** dei clienti (es. `propagandaadv/geo-clients`); se non è collegato, usa `add_repo` (accesso push) per collegarlo e clonalo lì. A fine di ogni fase: `git add`, commit e push su quel repo (mai nel repo del plugin). Non uscire dalla sessione con dati non pushati.
+
 Argomenti: $ARGUMENTS. Se manca il cliente chiedilo; con `--tutti` esegui per ogni cliente con `stato: attivo` e `leadradar.abilitato: true` (utile per esecuzione settimanale programmata) e produci un digest per cliente. Periodo di default: ultimi 7 giorni.
 
 ## Sorgente dati (in quest'ordine)
-1. MCP `leadradar` se registrato (modalità A/B), dopo discovery dei tool reali → `.tool-map.json`.
-2. Altrimenti `<slug>/leadradar/visite.csv` (modalità B: `python3 ${CLAUDE_PLUGIN_ROOT}/connectors/leadradar/ingest/import_csv.py`).
-3. Altrimenti storico alert (modalità C: `ingest/parse_alert_emails.py`).
+1. `<slug>/leadradar/visite.csv` (alimentato da `python3 ${CLAUDE_PLUGIN_ROOT}/connectors/leadradar/ingest/import_csv.py <slug> <export.csv>`; l'export CSV si scarica dal dashboard e si carica in sessione).
+2. Alert email: leggili con l'MCP Gmail (se collegato), salvali come `.txt` in `<slug>/leadradar/alert/` e importali con `ingest/parse_alert_emails.py <slug> --eml-dir ...`.
+3. Modalità A (API): solo se il fornitore la conferma.
+Nessun server locale: tutto gira nella sessione cloud.
 Se nessuna è disponibile, spiega cosa fare (export CSV dal dashboard). Dichiara sempre la modalità usata e la data dei dati.
 
 ## Contenuto del digest (skill `leadradar-digest`, template `digest-visitatori.md`)

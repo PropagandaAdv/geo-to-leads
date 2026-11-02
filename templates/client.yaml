@@ -28,5 +28,7 @@ leadradar:
 referente:
   nome: ""
   email: ""
+usp: []                    # punti di forza reali, verificabili
+casi_e_dati_proprietari: []  # casi studio, numeri, certificazioni usabili nei testi (con fonte)
 stato: attivo              # attivo | sospeso | chiuso
 creato_il: ""

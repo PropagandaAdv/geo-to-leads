@@ -12,16 +12,13 @@ claude plugin install geo-growth-engine@propaganda-geo
 ```
 (da dentro Claude Code: `/plugin marketplace add propagandaadv/geo-to-leads`, poi `/plugin install geo-growth-engine@propaganda-geo`). Sviluppo locale: `claude --plugin-dir .` e `/reload-plugins`.
 
-Requisiti: Python ≥ 3.10 con `pip install pyyaml python-docx`. Copia `.env.example` in `.env` e imposta le variabili (mai committare `.env`).
+Requisiti: Python ≥ 3.10 con `pip install pyyaml python-docx`. Le variabili (vedi `.env.example`) si impostano nell'ambiente cloud, mai nel repo.
 
-### MCP
-`.mcp.json` registra **ubersuggest** (HTTP, OAuth: autenticati con `/mcp`) e **arvow**. Equivalenti manuali:
-```bash
-claude mcp add --transport http ubersuggest https://ubersuggest-mcp.neilpatelapi.com/mcp
-claude mcp add --transport http arvow https://api.arvow.com/mcp --header "Authorization: Bearer $ARVOW_API_KEY"
-```
-> **Arvow non verificato:** l'URL `https://api.arvow.com/mcp` proviene da una fonte secondaria. Se non si connette, `/geo-articoli` usa l'API REST (https://api.arvow.com/api/docs) dopo aver letto la documentazione reale.
-> **LeadRadar** non è in `.mcp.json` finché il connettore non è pronto: vedi `connectors/leadradar/`.
+### Collegamenti (solo cloud, nessun server locale)
+- **Ubersuggest** (OAuth): è un MCP remoto nel `.mcp.json` del plugin. Va autorizzato una volta dall'utente (connettori/`/mcp`); nessuna chiave da gestire.
+- **Arvow**: imposta `ARVOW_API_KEY` come **variabile d'ambiente/segreto dell'ambiente cloud** (impostazioni ambiente → Edit), poi avvia una nuova sessione. **Non incollare chiavi in chat.** L'endpoint `https://api.arvow.com/mcp` non è verificato; se rifiuta la chiave (401) o non risponde, `/geo-articoli` usa l'API REST (https://api.arvow.com/api/docs).
+- **Dati cliente**: repo GitHub **privato** (es. `propagandaadv/geo-clients`) collegato alla sessione; il filesystem cloud è effimero, quindi ogni fase fa commit+push lì.
+- **LeadRadar**: nessun MCP; script di import in `connectors/leadradar/`.
 
 ## Comandi
 I comandi sono namespaced col plugin (`/geo-growth-engine:geo-analisi`); l'autocompletamento accorcia.
@@ -39,7 +36,10 @@ I comandi sono namespaced col plugin (`/geo-growth-engine:geo-analisi`); l'autoc
 Flusso: `cliente-nuovo → analisi → piano → (approvazione) → articoli`; in parallelo `leadradar-setup → report → outreach`.
 
 ## Dati cliente
-Fuori dal repo: `GEO_CLIENTS_DIR` (default `~/agency-clients/<slug>/`) con `client.yaml`, `analisi/AAAA-MM-GG/`, `piano-editoriale.*`, `articoli/`, `leadradar/`, `.tool-map.json`. Usa un repo **privato** per cliente (o unico). Nessun dato cliente è hard-coded nel plugin.
+Fuori da questo repo: `GEO_CLIENTS_DIR` (checkout del repo privato clienti) con `client.yaml`, `analisi/AAAA-MM-GG/`, `piano-editoriale.*`, `articoli/`, `leadradar/`, `.tool-map.json`. Usa un repo **privato** per cliente (o unico). Nessun dato cliente è hard-coded nel plugin.
+
+## Personalizzazione per cliente
+Ogni cliente parte da `profilo-cliente.md` (sito reale + `client.yaml`). Piano e brief citano l'evidenza dell'analisi (cluster, gap, competitor) e l'angolo proprio del cliente; il controllo qualità respinge testi intercambiabili con quelli di un altro cliente.
 
 ## Regole built-in
 - Discovery dei tool MCP prima di usarli → `.tool-map.json`; nessun nome di tool inventato.
@@ -60,4 +60,4 @@ Fuori dal repo: `GEO_CLIENTS_DIR` (default `~/agency-clients/<slug>/`) con `clie
 - *Parser alert vuoto*: usa `--dry-run` e adatta `LABELS` al formato reale.
 
 ## Stato implementazione
-Vedi `CHANGELOG.md`. Funzionanti e testati: `validate_client.py`, `export_docx.py`, import CSV, parser alert (.eml), server MCP locale. **Non testati** (richiedono credenziali/account): tutti i flussi Ubersuggest, Arvow, IMAP, Gmail. **Stub**: LeadRadar modalità A, client REST Arvow (`scripts/arvow_client.py` da scrivere dopo lettura della doc).
+Vedi `CHANGELOG.md`. Funzionanti e testati: `validate_client.py`, `export_docx.py`, import CSV, parser alert (.eml), import CSV/alert. **Non testati** (richiedono credenziali/account): tutti i flussi Ubersuggest, Arvow, IMAP, Gmail. **Stub**: LeadRadar modalità A, client REST Arvow (`scripts/arvow_client.py` da scrivere dopo lettura della doc).
