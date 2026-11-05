@@ -31,4 +31,8 @@ Prerequisiti esterni, non risolvibili da qui:
 ## Utenti e dati di prova (da cancellare a fine collaudo)
 - Utente `info@propagandaadv.com` creato dall'editor; inserito in `agency_admins`. Verificato in SQL (transazione annullata) che vede 1 cliente, 3 aziende, 1 bozza e i KPI.
 - Cliente fittizio `demo-srl` (id `d3d3d3d3-0000-4000-8000-000000000001`): 3 aziende, 4 visite, 1 contatto, 1 bozza `[DEMO]` — tutti marcati FITTIZI. Pulizia: `delete from clients where slug='demo-srl';` (cascade).
-- Non ancora creato: utente di ruolo `client_owner` per provare l'isolamento da loggato.
+- Utente cliente di prova **FITTIZIO** `cliente.prova@demo-srl.example` (`client_owner` di demo-srl; indirizzo inventato, non riceve email; password casuale generata in sessione, non nel repo) e cliente fittizio `altro-cliente` con un'azienda "SEGRETA" per provare l'isolamento. Pulizia: `delete from clients where slug in ('demo-srl','altro-cliente'); delete from auth.users where email='cliente.prova@demo-srl.example';`
+
+## Collaudo reale via API del backend (2026-11-05, utente cliente loggato)
+Login OK. Vede solo `demo-srl` e le sue 3 aziende; 0 righe di `altro-cliente` anche con filtro esplicito; non vede `agency_admins`; `integration_secrets` → 403; KPI corretti (3 aziende, 2 calde). Scritture bloccate (403): visite, creazione clienti, auto-assegnazione a un altro cliente, bozza→`inviata`, spostamento bozza su altro cliente. Anonimo: 401 su tutte le 10 tabelle.
+Non verificato: l'interfaccia da loggato (il preview è privato: da browser senza login Lovable rimanda alla loro pagina di accesso; servirebbe il deploy o il tuo browser). Nota: Cloudflare blocca lo user-agent Python di default (errore 1010).
