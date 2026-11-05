@@ -2,7 +2,7 @@
 
 Progetto Lovable **"Portale Clienti Pro"** — workspace "Giovanni's Lovable" (piano free), id `d0718620-a4a4-429c-a783-3065cf88dfa9`
 Editor: https://lovable.dev/projects/d0718620-a4a4-429c-a783-3065cf88dfa9 · Preview: https://id-preview--d0718620-a4a4-429c-a783-3065cf88dfa9.lovable.app
-Non pubblicato (nessun deploy, nessun dominio). Nessun utente invitato, nessun segreto OAuth inserito.
+**Pubblicato il 2026-11-05 su https://portale-clienti-pro.lovable.app** (deployment `70ee066d-9c53-4a13-aa78-1068475f8e12`, su richiesta esplicita). Nessun dominio personalizzato. Nessun utente invitato, nessun segreto OAuth inserito.
 
 | Prompt | Stato | Crediti |
 |---|---|---|
@@ -36,3 +36,7 @@ Prerequisiti esterni, non risolvibili da qui:
 ## Collaudo reale via API del backend (2026-11-05, utente cliente loggato)
 Login OK. Vede solo `demo-srl` e le sue 3 aziende; 0 righe di `altro-cliente` anche con filtro esplicito; non vede `agency_admins`; `integration_secrets` → 403; KPI corretti (3 aziende, 2 calde). Scritture bloccate (403): visite, creazione clienti, auto-assegnazione a un altro cliente, bozza→`inviata`, spostamento bozza su altro cliente. Anonimo: 401 su tutte le 10 tabelle.
 Non verificato: l'interfaccia da loggato (il preview è privato: da browser senza login Lovable rimanda alla loro pagina di accesso; servirebbe il deploy o il tuo browser). Nota: Cloudflare blocca lo user-agent Python di default (errore 1010).
+
+## Collaudo UI sul sito pubblicato (browser reale, utente cliente di prova)
+Login → Panoramica (KPI 3/2/0/0, banner "Aggiornati manualmente", feed visite), Aziende (3 righe, filtri nell'URL), Email (1 bozza, invito a collegare la casella, "Approva e invia" disattivato), Integrazioni (4 provider "Non collegata", testo permessi), Report (stato vuoto); `/admin` reindirizza alla Panoramica e la voce non compare nel menu; nessun dato di `altro-cliente`; nessun errore di pagina. Badge "Edit with Lovable" visibile (piano free).
+Attenzione: il sito è pubblico e l'utente di prova ha una password stampata nel registro della sessione → cancellare l'utente a fine collaudo (comando sopra) o cambiarne la password.
