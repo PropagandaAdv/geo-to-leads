@@ -51,3 +51,6 @@ Attenzione: il sito è pubblico e l'utente di prova ha una password stampata nel
 
 ### Funzioni edge (2026-11-05, codice scritto, non distribuito)
 `evaluate-icp`, `send-reminder`, `sync-visibility` e `tools/encrypt-token.ts` in `dashboard/functions/`; 14 test sulla logica pura passano (Node 22), controllo di tipi pulito con Deno simulato. **Non provate** contro Supabase/Anthropic/Google e **non distribuite**. `sync-visibility` riceve i dati dal plugin: non interroga Ubersuggest (nessuna chiave API per edge function). Prerequisiti: Secrets, token della casella commerciale@ cifrato, scheduler (da verificare). Vedi `functions/README.md`.
+
+### Schema v2.1 — citazioni aggregate (2026-11-05)
+`schema_v2_1_citazioni.sql` applicato al database reale: `ai_citations.prompt` e `provider` ora facoltativi; nuove colonne `piattaforme`, `argomenti`, `titolo`, `tipo_fonte`, `risposte_citanti`, `quota_citazione`; vincolo "prompt oppure url_citato"; indice unico per le righe aggregate. Test locali (`tests/run_rls_test_v2.sh`, incluso `rls_test_v2_1.sql`) superati. Cliente demo `noyfar`: baseline 2026-11-05 caricata (3 snapshot IA, 8 keyword non in top 100, 20 pagine più citate su 216). Aggiornati validatore, `sync-visibility`, `sync_dashboard.py visibility`, prompt 10, SPEC-v2.

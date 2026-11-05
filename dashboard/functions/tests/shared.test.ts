@@ -99,8 +99,10 @@ test("visibilità: payload valido", () => {
   const v = validaVisibilita(CID, {
     rankings: [{ keyword: "cilindri idraulici", posizione: 12, volume: 260, rilevato_il: OGGI, fonte: "Ubersuggest" }],
     ai_snapshots: [{ provider: "openai", visibilita_pct: 0, menzioni: 0, rilevato_il: OGGI, fonte: "Ubersuggest" }],
-    citations: [{ provider: "gemini", prompt: "p", cita_cliente: false, competitor: "x.it", rilevato_il: OGGI, fonte: "Ubersuggest" }],
+    citations: [{ provider: "gemini", prompt: "p", cita_cliente: false, competitor: "x.it", rilevato_il: OGGI, fonte: "Ubersuggest" },
+      { url_citato: "https://a.it/", dominio: "a.it", piattaforme: ["openai", "gemini"], argomenti: ["t"], tipo_fonte: "third_party", risposte_citanti: 5, quota_citazione: 9.26, rilevato_il: OGGI, fonte: "Ubersuggest" }],
     traffic: [{ mese: "2026-10-01", traffico_organico: 114, domain_authority: 12, fonte: "Ubersuggest" }] });
+  assert.equal(v.citations.length, 2); assert.equal(v.citations[1].prompt, null); assert.equal(v.citations[1].provider, null); assert.deepEqual(v.citations[1].piattaforme, ["openai", "gemini"]);
   assert.equal(v.rankings.length, 1); assert.equal(v.snapshots[0].visibilita_pct, 0); assert.equal(v.traffic[0].backlink, null);
 });
 test("visibilità: rifiuti", () => {
@@ -113,7 +115,12 @@ test("visibilità: rifiuti", () => {
   ko({ rankings: [{ keyword: "k", posizione: "12", rilevato_il: OGGI, fonte: "u" }] }, /posizione/);
   ko({ ai_snapshots: [{ provider: "bing", rilevato_il: OGGI, fonte: "u" }] }, /provider/);
   ko({ ai_snapshots: [{ provider: "openai", visibilita_pct: 140, rilevato_il: OGGI, fonte: "u" }] }, /visibilita_pct/);
-  ko({ citations: [{ provider: "openai", rilevato_il: OGGI, fonte: "u" }] }, /prompt/);
+  ko({ citations: [{ provider: "openai", rilevato_il: OGGI, fonte: "u" }] }, /prompt.*oppure.*url_citato/);
+  ko({ citations: [{ prompt: "p", rilevato_il: OGGI, fonte: "u" }] }, /richiede 'provider'/);
+  ko({ citations: [{ url_citato: "https://a.it", piattaforme: ["bing"], rilevato_il: OGGI, fonte: "u" }] }, /piattaforme/);
+  ko({ citations: [{ url_citato: "https://a.it", tipo_fonte: "boh", rilevato_il: OGGI, fonte: "u" }] }, /tipo_fonte/);
+  ko({ citations: [{ url_citato: "https://a.it", quota_citazione: 140, rilevato_il: OGGI, fonte: "u" }] }, /quota_citazione/);
+  ko({ citations: [{ url_citato: "https://a.it", rilevato_il: OGGI }] }, /fonte/);
   ko({ traffic: [{ mese: "2026-10-15", fonte: "u" }] }, /primo del mese/);
   ko({ rankings: "no" }, /array/);
   ko({ rankings: Array.from({ length: 5001 }, () => ({ keyword: "k", rilevato_il: OGGI, fonte: "u" })) }, /troppo grande/);

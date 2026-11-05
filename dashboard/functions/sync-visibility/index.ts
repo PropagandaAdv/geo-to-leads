@@ -38,10 +38,15 @@ Deno.serve(async (req) => {
     await up("keyword_rankings", v.rankings, "client_id,keyword,lingua,paese,rilevato_il");
     await up("ai_visibility_snapshots", v.snapshots, "client_id,provider,rilevato_il");
     await up("traffic_history", v.traffic, "client_id,mese");
-    if (v.citations.length) {   // nessuna chiave naturale: si sostituisce la rilevazione dello stesso giorno e provider
-      for (const k of new Set(v.citations.map((c) => `${c.provider}|${c.rilevato_il}`))) {
+    if (v.citations.length) {   // nessuna chiave naturale utile: si sostituisce la rilevazione dello stesso giorno
+      const perPrompt = v.citations.filter((c) => c.prompt !== null), aggregate = v.citations.filter((c) => c.prompt === null);
+      for (const k of new Set(perPrompt.map((c) => `${c.provider}|${c.rilevato_il}`))) {
         const [provider, giorno] = k.split("|");
-        const { error } = await admin.from("ai_citations").delete().eq("client_id", cl.id).eq("provider", provider).eq("rilevato_il", giorno);
+        const { error } = await admin.from("ai_citations").delete().eq("client_id", cl.id).eq("provider", provider).eq("rilevato_il", giorno).not("prompt", "is", null);
+        if (error) throw new Error("ai_citations: pulizia fallita");
+      }
+      for (const giorno of new Set(aggregate.map((c) => c.rilevato_il))) {
+        const { error } = await admin.from("ai_citations").delete().eq("client_id", cl.id).eq("rilevato_il", giorno).is("prompt", null);
         if (error) throw new Error("ai_citations: pulizia fallita");
       }
       const { error } = await admin.from("ai_citations").insert(v.citations);

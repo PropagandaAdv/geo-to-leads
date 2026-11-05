@@ -34,11 +34,23 @@ export function validaVisibilita(clientId: string, d: any) {
       menzioni: numOrNull(r.menzioni, "ai_snapshots", "menzioni", 0), sentiment: numOrNull(r.sentiment, "ai_snapshots", "sentiment"),
       rilevato_il: r.rilevato_il, fonte: String(r.fonte).slice(0, 200) };
   });
+  const TIPI_FONTE = ["owned", "competitor", "social", "third_party"];
   const citations = arr("citations").map((r: any) => {
-    need(r, ["provider", "prompt", "rilevato_il", "fonte"], "citations"); data(r.rilevato_il, "citations");
-    if (!PROVIDER_IA.includes(r.provider)) throw new ValidationError(`citations: provider non valido '${r.provider}'`);
-    return { client_id: clientId, provider: r.provider, prompt: String(r.prompt).slice(0, 500), url_citato: r.url_citato ?? null, dominio: r.dominio ?? null,
-      cita_cliente: r.cita_cliente === true, competitor: r.competitor ?? null, rilevato_il: r.rilevato_il, fonte: String(r.fonte).slice(0, 200) };
+    need(r, ["rilevato_il", "fonte"], "citations"); data(r.rilevato_il, "citations");
+    // riga per prompt: serve prompt + provider; riga aggregata per pagina: serve url_citato (prompt assente)
+    if (!r.prompt && !r.url_citato) throw new ValidationError("citations: serve 'prompt' (citazione per prompt) oppure 'url_citato' (citazione aggregata per pagina)");
+    if (r.prompt && !r.provider) throw new ValidationError("citations: la citazione per prompt richiede 'provider'");
+    if (r.provider != null && !PROVIDER_IA.includes(r.provider)) throw new ValidationError(`citations: provider non valido '${r.provider}'`);
+    const piattaforme = r.piattaforme === undefined ? [] : r.piattaforme;
+    if (!Array.isArray(piattaforme) || piattaforme.some((x: unknown) => !PROVIDER_IA.includes(x as any))) throw new ValidationError("citations: 'piattaforme' deve essere un array di provider validi");
+    if (r.tipo_fonte != null && !TIPI_FONTE.includes(r.tipo_fonte)) throw new ValidationError(`citations: tipo_fonte non valido '${r.tipo_fonte}'`);
+    const argomenti = r.argomenti === undefined ? [] : r.argomenti;
+    if (!Array.isArray(argomenti) || argomenti.some((x: unknown) => typeof x !== "string")) throw new ValidationError("citations: 'argomenti' deve essere un array di testi");
+    return { client_id: clientId, provider: r.provider ?? null, prompt: r.prompt ? String(r.prompt).slice(0, 500) : null, url_citato: r.url_citato ?? null, dominio: r.dominio ?? null,
+      cita_cliente: r.cita_cliente === true, competitor: r.competitor ?? null, piattaforme, argomenti: argomenti.map((x: string) => x.slice(0, 200)),
+      titolo: r.titolo ? String(r.titolo).slice(0, 300) : null, tipo_fonte: r.tipo_fonte ?? null,
+      risposte_citanti: numOrNull(r.risposte_citanti, "citations", "risposte_citanti", 0), quota_citazione: numOrNull(r.quota_citazione, "citations", "quota_citazione", 0, 100),
+      rilevato_il: r.rilevato_il, fonte: String(r.fonte).slice(0, 200) };
   });
   const traffic = arr("traffic").map((r: any) => {
     need(r, ["mese", "fonte"], "traffic"); data(r.mese, "traffic");

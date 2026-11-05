@@ -41,7 +41,7 @@ Menu laterale a gruppi (mobile: schede in basso). Ruoli come in `SPEC.md`: `clie
 Dati in sola lettura per il cliente; scritti dal plugin o da funzioni (service role), sempre con `fonte` e data.
 - **Posizionamento** (`keyword_rankings`): keyword, posizione, URL, volume, variazione rispetto alla rilevazione precedente.
 - **Visibilità IA** (`ai_visibility_snapshots`): per provider, % di risposte che citano il brand, rank medio, share of voice, menzioni, sentiment.
-- **Citazioni** (`ai_citations`): prompt, provider, URL citato, se cita il cliente, competitor citato.
+- **Citazioni** (`ai_citations`, schema v2.1): due tipi di riga. *Aggregata per pagina* (`prompt` nullo; è ciò che restituisce Ubersuggest `brand_citations`): URL, titolo, tipo fonte, piattaforme, argomenti, risposte citanti, quota di citazione. *Per prompt* (`prompt` + `provider`): quando la fonte dà il dettaglio per prompt. In entrambi: se cita il cliente, competitor citato.
 - **Crescita** (`traffic_history`): serie mensile (traffico organico stimato, keyword organiche, domain authority, backlink, domini referenti). Serve una rilevazione regolare per avere uno storico; la prima è la baseline.
 - Fonte: Ubersuggest (piano da 99 $, 15 brand, 20 prompt per brand; verificato con `user_limits` il 2026-11-05). Dove manca il dato: "n.d.", non una stima.
 

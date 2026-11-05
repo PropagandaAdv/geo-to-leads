@@ -247,12 +247,25 @@ def cmd_visibility(a, api):
         sn.append({"client_id": cid, **{k: r.get(k) for k in ("provider", "visibilita_pct", "rank_medio", "share_of_voice",
                                                               "menzioni", "sentiment", "rilevato_il", "fonte")}})
     ct = []
+    TIPI_FONTE = {"owned", "competitor", "social", "third_party"}
     for r in d.get("citations", []):
-        need(r, ("provider", "prompt", "rilevato_il", "fonte"), "citations")
-        if r["provider"] not in PROVIDER_IA:
+        need(r, ("rilevato_il", "fonte"), "citations")
+        # riga per prompt: prompt + provider; riga aggregata per pagina: url_citato (prompt assente)
+        if not r.get("prompt") and not r.get("url_citato"):
+            sys.exit(f"ERRORE: citations: serve 'prompt' (per prompt) oppure 'url_citato' (aggregata per pagina): {r}")
+        if r.get("prompt") and not r.get("provider"):
+            sys.exit(f"ERRORE: citations: la citazione per prompt richiede 'provider': {r}")
+        if r.get("provider") is not None and r["provider"] not in PROVIDER_IA:
             sys.exit(f"ERRORE: provider IA non valido {r['provider']!r}")
-        ct.append({"client_id": cid, "provider": r["provider"], "prompt": r["prompt"], "url_citato": r.get("url_citato"),
+        piat = r.get("piattaforme") or []
+        if any(x not in PROVIDER_IA for x in piat):
+            sys.exit(f"ERRORE: citations: 'piattaforme' non valide {piat}")
+        if r.get("tipo_fonte") is not None and r["tipo_fonte"] not in TIPI_FONTE:
+            sys.exit(f"ERRORE: citations: tipo_fonte non valido {r['tipo_fonte']!r}")
+        ct.append({"client_id": cid, "provider": r.get("provider"), "prompt": r.get("prompt"), "url_citato": r.get("url_citato"),
                    "dominio": r.get("dominio"), "cita_cliente": bool(r.get("cita_cliente")), "competitor": r.get("competitor"),
+                   "piattaforme": piat, "argomenti": r.get("argomenti") or [], "titolo": r.get("titolo"), "tipo_fonte": r.get("tipo_fonte"),
+                   "risposte_citanti": r.get("risposte_citanti"), "quota_citazione": r.get("quota_citazione"),
                    "rilevato_il": r["rilevato_il"], "fonte": r["fonte"]})
     tr = []
     for r in d.get("traffic", []):
@@ -264,9 +277,11 @@ def cmd_visibility(a, api):
     api.upsert("keyword_rankings", rk, "client_id,keyword,lingua,paese,rilevato_il")
     api.upsert("ai_visibility_snapshots", sn, "client_id,provider,rilevato_il")
     api.upsert("traffic_history", tr, "client_id,mese")
-    if ct:  # le citazioni non hanno chiave naturale: si sostituisce la rilevazione dello stesso giorno/provider
-        for prov, day in sorted({(c["provider"], c["rilevato_il"]) for c in ct}):
-            api.call("DELETE", f"/rest/v1/ai_citations?client_id=eq.{cid}&provider=eq.{prov}&rilevato_il=eq.{day}")
+    if ct:  # si sostituisce la rilevazione dello stesso giorno (per prompt: per provider; aggregate: tutte)
+        for prov, day in sorted({(c["provider"], c["rilevato_il"]) for c in ct if c["prompt"]}):
+            api.call("DELETE", f"/rest/v1/ai_citations?client_id=eq.{cid}&provider=eq.{prov}&rilevato_il=eq.{day}&prompt=not.is.null")
+        for day in sorted({c["rilevato_il"] for c in ct if not c["prompt"]}):
+            api.call("DELETE", f"/rest/v1/ai_citations?client_id=eq.{cid}&rilevato_il=eq.{day}&prompt=is.null")
         api.call("POST", "/rest/v1/ai_citations", ct, {"Prefer": "return=minimal"})
     print(f"Visibilita': ranking {len(rk)} · snapshot IA {len(sn)} · citazioni {len(ct)} · mesi {len(tr)}")
 
