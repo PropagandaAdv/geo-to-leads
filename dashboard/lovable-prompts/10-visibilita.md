@@ -1,7 +1,7 @@
 Costruisci l'area Visibilità in sola lettura con `keyword_rankings`, `ai_visibility_snapshots`, `ai_citations`, `traffic_history`.
-- Posizionamento: tabella keyword (posizione, variazione rispetto alla rilevazione precedente, volume, URL) e grafico per le keyword selezionate.
-- Visibilità IA: per provider, andamento della % di visibilità, rank medio, share of voice, menzioni, sentiment.
-- Citazioni: elenco per prompt/provider, filtro "cita il cliente / cita un competitor", URL e dominio.
-- Crescita: serie mensile da `traffic_history` (traffico organico stimato, keyword organiche, domain authority, backlink, domini referenti) con confronto col primo mese (baseline).
+- Posizionamento: tabella keyword (posizione, variazione rispetto alla rilevazione precedente della stessa keyword, volume, URL) e grafico per le keyword selezionate. `posizione` nulla significa "non nei primi 100", NON "n.d.": mostralo come "Fuori dai primi 100".
+- Visibilità IA: per provider (openai = ChatGPT, gemini, google_aio = AI Overviews), andamento della % di visibilità, rank medio, share of voice, menzioni, sentiment. Un valore 0 è un dato vero ("0 %"); un valore nullo si mostra "n.d.".
+- Citazioni (`ai_citations`): le righe sono di due tipi. Se `prompt` è nullo è una citazione AGGREGATA PER PAGINA: mostra titolo, dominio e URL, `tipo_fonte` (owned = pagina del cliente, third_party, social, competitor), `piattaforme` (ChatGPT/Gemini/AI Overviews), `argomenti`, `risposte_citanti` e `quota_citazione` (%), ordinate per quota decrescente. Se `prompt` è valorizzato è una citazione per prompt (provider + prompt). Filtri: `cita_cliente` e piattaforma. In alto un KPI "Pagine del cliente citate" (numero di righe con `cita_cliente = true`; 0 se nessuna).
+- Crescita: serie mensile da `traffic_history` (traffico organico stimato, keyword organiche, domain authority, backlink, domini referenti) con confronto col primo mese (baseline). I valori nulli (es. traffico nel mese in cui ci sono solo DA e backlink) non vanno tracciati come zero.
 - Ogni dato mostra `fonte` e data di rilevazione. Se manca: "n.d.". Nessuna stima di guadagno in euro e nessun valore inventato.
 Stato vuoto chiaro: "Le prime rilevazioni arriveranno dopo l'analisi". Verifica `tsgo --noEmit` e i test.
