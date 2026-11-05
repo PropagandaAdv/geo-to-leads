@@ -40,3 +40,11 @@ Non verificato: l'interfaccia da loggato (il preview è privato: da browser senz
 ## Collaudo UI sul sito pubblicato (browser reale, utente cliente di prova)
 Login → Panoramica (KPI 3/2/0/0, banner "Aggiornati manualmente", feed visite), Aziende (3 righe, filtri nell'URL), Email (1 bozza, invito a collegare la casella, "Approva e invia" disattivato), Integrazioni (4 provider "Non collegata", testo permessi), Report (stato vuoto); `/admin` reindirizza alla Panoramica e la voce non compare nel menu; nessun dato di `altro-cliente`; nessun errore di pagina. Badge "Edit with Lovable" visibile (piano free).
 Attenzione: il sito è pubblico e l'utente di prova ha una password stampata nel registro della sessione → cancellare l'utente a fine collaudo (comando sopra) o cambiarne la password.
+
+---
+## Aggiornamento 2026-11-05 — schema v2 applicato al database reale
+- Applicato `schema_v2.sql` in un'unica transazione: **23 tabelle, tutte con RLS**, 29 policy, 4 trigger nuovi. Verificati i permessi: `authenticated` scrive solo override ICP, nuove versioni di profilo e proprie preferenze; `agency_mailbox` senza alcun permesso; `anon` senza accesso.
+- Correzione trovata in test: su Supabase le tabelle nuove ereditano ALL per anon/authenticated, quindi i permessi per colonna da soli non limitavano nulla. `schema_v2.sql` ora fa `revoke all` prima dei grant; `tests/run_rls_test_v2.sh` simula i default privileges e **fallisce senza la revoca** (verificato).
+- Revocato anche `anon` su `v_client_kpis` (permessi eccessivi ereditati dalla v1; i dati restavano protetti dalle tabelle sottostanti).
+- **Cliente demo `noyfar`** ("Noyfar S.R.L. (DEMO)"): 17 mesi di storico (Ubersuggest `domain_overview`, estratto 2026-11-05, traffico *stimato*), 8 keyword posizionate (`domain_keywords`), profilo Outreach v1 con testi marcati *[DEMO]*, promemoria **disattivo**. Nessuna azienda visitatrice e **nessun dato personale** (il contatto arricchito con Apollo non è stato caricato). Pulizia: `delete from clients where slug='noyfar';`
+- **Non fatto:** i prompt Lovable 08–11 (UI) non sono stati inviati: consumano crediti del piano free. Le pagine Aziende/Outreach/Visibilità, le funzioni `evaluate-icp`, `send-reminder`, `sync-visibility` e il collaudo da loggato restano da fare.

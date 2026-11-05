@@ -193,6 +193,12 @@ create policy prefs_read on user_prefs for select to authenticated using (user_i
 create policy prefs_insert on user_prefs for insert to authenticated with check (user_id = auth.uid() and has_client_access(client_id));
 create policy prefs_update on user_prefs for update to authenticated using (user_id = auth.uid()) with check (user_id = auth.uid());
 
+-- Su Supabase le tabelle nuove ereditano ALL per anon/authenticated (default privileges): si revoca TUTTO prima
+-- dei grant, altrimenti i permessi per colonna sarebbero solo additivi e non limiterebbero nulla.
+revoke all on outreach_profiles, icp_evaluations, keyword_rankings, ai_visibility_snapshots, ai_citations,
+  traffic_history, reminder_settings, reminder_log, user_prefs, agency_mailbox,
+  v_outreach_attivo, v_company_icp from anon, authenticated;
+
 -- Privilegi di colonna: il titolare cambia solo l'override ICP e (per sé) il flag notifiche in user_prefs.
 grant select on outreach_profiles, icp_evaluations, keyword_rankings, ai_visibility_snapshots,
   ai_citations, traffic_history, reminder_settings, reminder_log to authenticated;
