@@ -14,3 +14,11 @@ Implementate in Lovable Cloud (Deno/TypeScript). Regole comuni: verificare il JW
 | `retention-cleanup` | cron giornaliero | Cancella dati oltre `clients.retention_giorni`. |
 
 Aperture email: nessun pixel (disattivato di default).
+
+## Funzioni aggiunte con lo schema v2 (specifiche)
+| Funzione | Trigger | Scopo |
+|---|---|---|
+| `evaluate-icp` | nuova azienda/visita, cambio versione profilo, richiesta manuale | Legge il profilo attivo (`v_outreach_attivo`), confronta i dati dell'azienda (Apollo, sito) con l'ICP e scrive `icp_evaluations` (`in_target` / `fuori_target` / `da_verificare`, motivazione breve, evidenze con fonte e data). Dato mancante ⇒ `da_verificare`, mai una supposizione. Una sola valutazione per (azienda, profilo). |
+| `send-reminder` | cron giornaliero | Per ogni `reminder_settings` con `attivo`, `testo_approvato_il` valorizzato e `prossimo_invio <= now()`: invia da `commerciale@propagandaadv.com` (token in `agency_mailbox`, solo service role) agli utenti del cliente che non hanno disattivato in `user_prefs`; scrive `reminder_log`; aggiorna `ultimo_invio`/`prossimo_invio`. È l'unico invio automatico: nessun dato commerciale nel testo. |
+| `sync-visibility` | cron settimanale / plugin | Scrive `keyword_rankings`, `ai_visibility_snapshots`, `ai_citations`, `traffic_history` con `fonte` e data. |
+Secret aggiuntivi: `AGENCY_MAILBOX_ENC_KEY` (cifratura del token della casella commerciale). Nessun segreto nel frontend.

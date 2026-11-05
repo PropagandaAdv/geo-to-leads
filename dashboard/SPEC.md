@@ -9,6 +9,8 @@ App Lovable **unica e multi-tenant** (Lovable Cloud / Supabase). Ogni cliente ac
 | `client_owner` | vedere i dati del cliente, collegare email/calendario, modificare/approvare/scartare bozze |
 | `client_member` | sola lettura |
 
+> **Aggiornamento:** navigazione per aree, ICP/tono di voce, Visibilità e promemoria sono in `SPEC-v2.md` (schema in `schema_v2.sql`). L'elenco qui sotto è la v1.
+
 ## Pagine
 1. **Panoramica** — KPI (aziende identificate, calde, email inviate, tasso di risposta, appuntamenti), feed visite in Realtime. Mostra la **latenza reale** della sorgente visite (campo `clients.latenza_visite`): la dicitura "tempo reale" compare solo se la fonte lo è.
 2. **Aziende** — filtri (periodo, settore, paese, ICP, stato contatto); scheda con visite, pagine, contatti, email, appuntamenti, prossima azione.
