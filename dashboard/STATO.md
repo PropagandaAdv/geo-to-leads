@@ -1,4 +1,4 @@
-# Stato dashboard (aggiornato 2026-11-04)
+# Stato dashboard (aggiornato 2026-11-05)
 
 Progetto Lovable **"Portale Clienti Pro"** — workspace "Giovanni's Lovable" (piano free), id `d0718620-a4a4-429c-a783-3065cf88dfa9`
 Editor: https://lovable.dev/projects/d0718620-a4a4-429c-a783-3065cf88dfa9 · Preview: https://id-preview--d0718620-a4a4-429c-a783-3065cf88dfa9.lovable.app
@@ -11,18 +11,19 @@ Non pubblicato (nessun deploy, nessun dominio). Nessun utente invitato, nessun s
 | 03 panoramica/aziende | **fatto**: correzione inviata, `tsgo` pulito, 8/8 test, preview si carica (login). Pagine interne non provate con utente reale | 4,4 + 1,5 |
 | 04 email/bozze | **fatto e verificato**: `email.tsx` senza errori di tipo | 3,5 |
 | 05 appuntamenti/integrazioni | **fatto**: lista+calendario mensile; card provider con Collega/Revoca solo per owner/admin che invocano `oauth-start`/`oauth-revoke` (se mancano: "Il collegamento sarà disponibile a breve"); allowlist host OAuth lato frontend; `tsgo` OK, 25 test | 4,3 |
-| 06 report/admin | **NON implementato**: l'agente ha fatto solo controlli e ha chiesto di procedere; messaggio di conferma non inviato (crediti esauriti) | 0,7 |
-| 07 edge function | **da fare** | — |
+| 06 report/admin | **fatto**: Report con download da URL firmati 60 s; Admin (solo agency_admin) con clienti, utenti, integrazioni, email in errore, creazione cliente; invito utenti come server function (verifica `agency_admins`, service role solo server, rollback con eliminazione dell'account se l'inserimento in `client_users` fallisce). `tsgo` OK, 30 test. **Non provato da loggato**; un'email già registrata non si può invitare a un secondo cliente; gli utenti compaiono per ID interno (le tabelle non hanno le email) | 4,9 |
+| 07 edge function | **da fare**: richiede prerequisiti esterni (vedi sotto) | — |
 
 ## Verifiche sul database reale (transazione annullata, nessun dato residuo)
 Utente A vede solo i propri dati (aziende, email, clienti); non vede email/aziende/integrazioni di B; token OAuth non leggibili; approva solo la propria bozza; non può impostare `inviata`; non scrive visite; non può auto-assegnarsi a un cliente; anon bloccato. Test locale equivalente: `dashboard/tests/run_rls_test.sh` (23 controlli).
 
-## Per riprendere
-1. Aggiungere crediti: https://lovable.dev/settings/billing (o attendere il rinnovo). Consumo finora: ~20 crediti per 6 prompt (3–5 a prompt).
-2. Inviare il prompt 06 (`lovable-prompts/06-report-admin.md`) dicendo di implementare subito, senza chiedere conferma; l'invito utenti deve essere una server function che verifica `agency_admins`, altrimenti pulsante disabilitato.
-3. Prompt 07 (edge function): richiede i segreti OAuth, che si inseriscono **nell'editor Lovable**, mai in chat.
-4. Creare il primo `agency_admin` e invitare utenti (More → Users → Add user), poi `/dashboard-cliente`.
-5. Solo dopo: deploy e dominio (conferma esplicita).
+## Per riprendere (prompt 07: edge function)
+Prerequisiti esterni, non risolvibili da qui:
+1. **Primo utente** (More → Users → Add user nell'editor Lovable) da inserire in `agency_admins`; senza utenti nessuna pagina è provabile.
+2. **Google**: progetto Google Cloud con client OAuth in modalità *Testing* (scope `gmail.send` + calendario sola lettura); Client ID/Secret da inserire nei Secrets Lovable, mai in chat. Produzione: verifica OAuth (e CASA se si usa `gmail.readonly`).
+3. **Microsoft**: registrazione app su Entra ID (`Mail.Send`, `Calendars.Read`, `offline_access`); consenso admin per Mail da verificare sul tenant.
+4. **Rilevamento risposte (Fase 1)**: serve un indirizzo di ingresso (`in+<id>@dominio-agenzia`) con un servizio di posta in ingresso/webhook: da scegliere. Alternativa: leggere i thread (Gmail `readonly`, restricted → CASA).
+5. Poi: prompt 07 (testo in `lovable-prompts/07-edge-functions.md`), test end-to-end con "demo-srl", deploy e dominio (conferma esplicita).
 
 ## Note
 - Il preview segnala avvisi di idratazione React recuperabili (non analizzati). Nessuna pagina interna è stata provata da loggato: non esistono utenti.
