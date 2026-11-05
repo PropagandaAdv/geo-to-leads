@@ -50,7 +50,7 @@ Dati in sola lettura per il cliente; scritti dal plugin o da funzioni (service r
 - Frequenza per cliente (`reminder_settings.frequenza`): **mensile** (predefinita) o quindicinale. Modifica solo da `agency_admin`.
 - Testo: modello unico approvato una volta (`testo_approvato_il`); l'invio parte **solo se valorizzato** e se `attivo`. Contenuto: invito ad aprire la dashboard + link. Nessun dato personale o commerciale nel messaggio.
 - Destinatari: gli utenti del cliente (`client_users`), tranne chi ha disattivato in `user_prefs`. Ogni email include il link per gestire le notifiche.
-- Funzione `send-reminder` (cron giornaliero): seleziona i clienti con `prossimo_invio <= now()`, invia, scrive `reminder_log`, aggiorna `ultimo_invio`/`prossimo_invio`. In caso di errore: `reminder_log.esito='errore'`, nessun nuovo tentativo oltre uno al giorno.
+- Funzione `send-reminder` (cron giornaliero; codice in `functions/send-reminder/`): seleziona i clienti con `prossimo_invio <= now()`, invia, scrive `reminder_log`, aggiorna `ultimo_invio`/`prossimo_invio`. In caso di errore: `reminder_log.esito='errore'`, nessun nuovo tentativo oltre uno al giorno.
 - Questo è l'**unico** invio automatico del sistema, ed è un messaggio di servizio verso utenti già registrati. I messaggi di outreach restano sempre approvati a mano.
 
 ## 5. Plugin: modifiche previste (non ancora implementate)

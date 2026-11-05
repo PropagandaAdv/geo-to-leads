@@ -15,10 +15,29 @@ Implementate in Lovable Cloud (Deno/TypeScript). Regole comuni: verificare il JW
 
 Aperture email: nessun pixel (disattivato di default).
 
-## Funzioni aggiunte con lo schema v2 (specifiche)
-| Funzione | Trigger | Scopo |
+## Funzioni dello schema v2 (codice scritto, NON ancora distribuito)
+Codice in `evaluate-icp/`, `send-reminder/`, `sync-visibility/` (+ `_shared/` con la logica pura e `tools/encrypt-token.ts`). Test della logica: `node --experimental-strip-types --test functions/tests/shared.test.ts` (14 test). **Non provate** contro Supabase, Anthropic e Google: servono Secrets reali e una prova guidata (vedi sotto).
+
+| Funzione | Chi la chiama | Cosa fa |
 |---|---|---|
-| `evaluate-icp` | nuova azienda/visita, cambio versione profilo, richiesta manuale | Legge il profilo attivo (`v_outreach_attivo`), confronta i dati dell'azienda (Apollo, sito) con l'ICP e scrive `icp_evaluations` (`in_target` / `fuori_target` / `da_verificare`, motivazione breve, evidenze con fonte e data). Dato mancante ⇒ `da_verificare`, mai una supposizione. Una sola valutazione per (azienda, profilo). |
-| `send-reminder` | cron giornaliero | Per ogni `reminder_settings` con `attivo`, `testo_approvato_il` valorizzato e `prossimo_invio <= now()`: invia da `commerciale@propagandaadv.com` (token in `agency_mailbox`, solo service role) agli utenti del cliente che non hanno disattivato in `user_prefs`; scrive `reminder_log`; aggiorna `ultimo_invio`/`prossimo_invio`. È l'unico invio automatico: nessun dato commerciale nel testo. |
-| `sync-visibility` | cron settimanale / plugin | Scrive `keyword_rankings`, `ai_visibility_snapshots`, `ai_citations`, `traffic_history` con `fonte` e data. |
-Secret aggiuntivi: `AGENCY_MAILBOX_ENC_KEY` (cifratura del token della casella commerciale). Nessun segreto nel frontend.
+| `evaluate-icp` | plugin / dashboard (service role oppure `client_owner`/`agency_admin` con JWT) | Per le aziende senza giudizio sulla **versione attiva** del profilo (max 20 per chiamata) chiede a Claude, con output forzato su uno strumento strutturato, `in_target` / `fuori_target` / `da_verificare` con motivazione ed evidenze. Il risultato viene **validato**: se manca la fonte, la fonte non è tra quelle fornite, il giudizio non ha alcun dato o si basa solo su inferenza, viene **declassato a `da_verificare`**. I testi di azienda e sito sono trattati come dati non fidati. `use_website: true` legge la home pubblica (solo https, un redirect verso lo stesso dominio, niente IP/host interni). Gli override del titolare non vengono toccati. |
+| `send-reminder` | cron giornaliero (`x-cron-secret`) | Invia il promemoria da `commerciale@propagandaadv.com` **solo** se `attivo`, `testo_approvato_il` valorizzato, `prossimo_invio` scaduto e casella collegata. Un messaggio per destinatario (nessuno vede gli altri), esclusi gli utenti con `user_prefs.notifiche_promemoria = false`. "Prenota" il cliente prima di inviare per evitare doppioni; in caso di errore riprova il giorno dopo. Scrive `reminder_log`. `{"dry_run":true}` mostra cosa invierebbe senza inviare né modificare nulla. |
+| `sync-visibility` | plugin / task programmato (`x-ingest-secret` o service role) | Valida e scrive posizionamento, visibilità IA, citazioni e storico mensile (stesse regole di `scripts/sync_dashboard.py visibility`: ogni dato con fonte e data). **Non interroga Ubersuggest**: non esiste una chiave API utilizzabile da una edge function (solo MCP con OAuth); le rilevazioni le esegue `/geo-visibilita`. |
+
+### Secrets da impostare (Lovable Cloud → Secrets; mai in chat né nel repo)
+`ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL` (opz., default `claude-sonnet-5-5`), `CRON_SECRET`, `INGEST_SECRET`, `AGENCY_MAILBOX_ENC_KEY` (≥16 caratteri casuali), `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `APP_URL` (`https://portale-clienti-pro.lovable.app`).
+
+### Casella commerciale@propagandaadv.com (una tantum)
+1. Autorizza l'app Google (modalità Testing, scope `gmail.send`) **con quell'account** e ottieni il refresh token (flusso OAuth in locale, mai in chat).
+2. Cifralo: `AGENCY_MAILBOX_ENC_KEY=... deno run functions/tools/encrypt-token.ts` (token su stdin) e inserisci l'output in `agency_mailbox` con lo `INSERT` indicato nel file. Se il rinnovo fallisce, la casella passa a `scaduta` e i promemoria vanno in errore (non si perdono silenziosamente).
+
+### Distribuzione e pianificazione [DA VERIFICARE su Lovable Cloud]
+- Le funzioni invocate con `x-cron-secret`/`x-ingest-secret` non portano un JWT utente: servono `verify_jwt = false` per `send-reminder` e `sync-visibility` (l'autenticazione è nel codice). `evaluate-icp` usa il JWT dell'utente o la service role.
+- Il cron giornaliero di `send-reminder` si imposta con `pg_cron` + `pg_net` (`net.http_post` con l'header `x-cron-secret`) oppure con lo scheduler di Lovable, se disponibile. Non ho verificato quale sia disponibile nel progetto.
+- Il link "gestisci notifiche" punta a `APP_URL/impostazioni/notifiche`: la pagina va creata con coerenza (prompt 11).
+
+### Prima prova consigliata (nessun invio reale)
+1. `evaluate-icp` sul cliente demo `noyfar` senza aziende → deve rispondere 0 valutate; poi con 1 azienda fittizia.
+2. `send-reminder` con `{"dry_run":true}` → deve elencare i destinatari senza inviare.
+3. `sync-visibility` con un payload minimo di Noyfar → righe in `keyword_rankings`.
+Solo dopo, un invio reale a un indirizzo interno con `attivo = true` e testo approvato.
