@@ -1,4 +1,4 @@
-# Stato dashboard (aggiornato 2026-11-05)
+# Stato dashboard (aggiornato 2026-11-05, sera)
 
 Progetto Lovable **"Portale Clienti Pro"** — workspace "Giovanni's Lovable" (piano free), id `d0718620-a4a4-429c-a783-3065cf88dfa9`
 Editor: https://lovable.dev/projects/d0718620-a4a4-429c-a783-3065cf88dfa9 · Preview: https://id-preview--d0718620-a4a4-429c-a783-3065cf88dfa9.lovable.app
@@ -27,3 +27,8 @@ Prerequisiti esterni, non risolvibili da qui:
 
 ## Note
 - Il preview segnala avvisi di idratazione React recuperabili (non analizzati). Nessuna pagina interna è stata provata da loggato: non esistono utenti.
+
+## Utenti e dati di prova (da cancellare a fine collaudo)
+- Utente `info@propagandaadv.com` creato dall'editor; inserito in `agency_admins`. Verificato in SQL (transazione annullata) che vede 1 cliente, 3 aziende, 1 bozza e i KPI.
+- Cliente fittizio `demo-srl` (id `d3d3d3d3-0000-4000-8000-000000000001`): 3 aziende, 4 visite, 1 contatto, 1 bozza `[DEMO]` — tutti marcati FITTIZI. Pulizia: `delete from clients where slug='demo-srl';` (cascade).
+- Non ancora creato: utente di ruolo `client_owner` per provare l'isolamento da loggato.
