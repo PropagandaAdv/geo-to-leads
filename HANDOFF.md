@@ -46,3 +46,24 @@ Plugin Claude Code per un'agenzia italiana (Propaganda Adv), multi-cliente: anal
 - Privacy: ricontatti ed email regolati da GDPR e art. 130 Codice Privacy; estrazione di contatti nominativi (Apollo) richiede base giuridica e informativa, da validare col consulente privacy del cliente.
 - Il plugin ufficiale `ubersuggest:*` può duplicare l'MCP `ubersuggest` del `.mcp.json`: verificare conflitti.
 - Pulizia dei file temporanei: la scratchpad della sessione contiene la password di prova; non serve altro.
+
+---
+## Aggiornamento 2026-11-05 (sessione successiva) — branch `claude/peaceful-brahmagupta-ounxiy` (v0.4.0)
+**Fatto**
+- `geo-clients` collegato e con `main` creato: `noyfar/` (analisi GEO preliminare, `.tool-map.json`, `ubersuggest.json`).
+- Prova Apollo su 2 aziende: Noyfar S.R.L. (noyfar.it) trovata, Swifty srl **non trovata** in Apollo (servirebbe il dominio). 1 contatto arricchito (CEO, email verificata): 1 credito (381 → 380). Nessuna email inviata.
+- Analisi Noyfar: `robots.txt` = `Disallow: /` (verificato con curl) → il sito blocca tutti i crawler; 8 keyword organiche non pertinenti, ~114 visite/mese stimate, DA 12. Nessun dato competitor.
+- Ubersuggest passato al piano da 99 $: 15 progetti/brand, 20 prompt per brand. **Progetto Noyfar creato** (id in `geo-clients/noyfar/ubersuggest.json`), 8 keyword, 20 prompt IA in 4 argomenti, nessun competitor. Baseline attesa dopo ~1 giorno; `get_project` mostrava `has_brand:false` pur con brand creato → verificare con `brand_config`.
+- Dashboard v2: `dashboard/SPEC-v2.md`, `schema_v2.sql` (testato con `tests/run_rls_test_v2.sh`, 23 + nuovi controlli), prompt Lovable 08–11, funzioni in `functions/README.md`.
+- Plugin v0.4.0: `/leadradar-icp`, `/geo-visibilita`, agente `icp-evaluator`, `/leadradar-outreach` riscritto, `sync_dashboard.py` con `profile`, `icp-pending`, `icp`, `visibility`. `claude plugin validate` OK; i nuovi comandi dello script provati solo in `--dry-run` (nessun test contro un database reale: in particolare il rifiuto delle bozze per aziende non in target è verificato nel database di test, non via REST).
+
+**Decisioni dell'utente**
+- Mittente del promemoria: `commerciale@propagandaadv.com`; frequenza predefinita mensile (da confermare). ICP e tono di voce come **prompt libero** per cliente. Lovable: nessun upgrade per ora. Arvow non ancora attivato. Parere positivo su LeadRadar. Demo = Noyfar.
+
+**Da fare, in ordine**
+1. Leggere la baseline Noyfar (`/geo-visibilita noyfar`), salvarla in `geo-clients`.
+2. Applicare `schema_v2.sql` al database reale (non ancora fatto) e incollare/eseguire i prompt 08–11 in Lovable (crediti free quasi esauriti).
+3. Prompt 07 e funzioni `evaluate-icp`/`send-reminder`/`sync-visibility`; Google OAuth (Testing) con l'account commerciale@; scelta posta in ingresso.
+4. Competitor di Noyfar (da scegliere con l'utente), poi gap/cluster; correzione del `robots.txt` richiede il titolare del sito.
+5. Approvare il testo del promemoria; verificare prezzi Lovable/Supabase.
+6. Pulizia dati fittizi (`demo-srl`, `altro-cliente`, utente di prova).

@@ -33,7 +33,9 @@ I comandi sono namespaced col plugin (`/geo-growth-engine:geo-analisi`); l'autoc
 | `/geo-articoli` | Brief + bozze Arvow + controllo qualità |
 | `/leadradar-setup` | Checklist snippet, ICP, alert, privacy |
 | `/leadradar-report [--tutti]` | Digest visitatori (md + docx) |
-| `/leadradar-outreach` | Bozze email nel database (mai invio automatico) |
+| `/leadradar-icp` | Valuta le aziende rispetto all'ICP del cliente (prompt libero): in target / fuori target / da verificare |
+| `/leadradar-outreach` | Una bozza personalizzata per contatto, solo per aziende in target, nel tono del cliente (mai invio automatico) |
+| `/geo-visibilita` | Posizionamento, visibilità nelle risposte IA, citazioni e crescita (Ubersuggest) → repo + dashboard |
 | `/dashboard-setup` | Crea/aggiorna l'app Lovable multi-tenant (una tantum) |
 | `/dashboard-cliente` | Attiva un cliente nella dashboard |
 
